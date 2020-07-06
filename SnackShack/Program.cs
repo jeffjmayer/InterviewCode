@@ -49,14 +49,14 @@ namespace SnackShack
             {
                 int answer = Convert.ToInt32(Console.ReadLine());
 
-                ProcessAnswer(answer, type);
-                CustomerInput(question, type);
+                ProcessAnswer(answer, type);                
             }
             catch
             {                
-                Console.WriteLine("IO error trying to read your answer needs to be a small integer" + "\n");
-                CustomerInput(question, type);
+                Console.WriteLine("IO error trying to read your answer needs to be a small integer" + "\n");                
             }
+
+            CustomerInput(question, type);
 
             return 0;
         }
@@ -132,8 +132,7 @@ namespace SnackShack
                 time = time.AddMinutes(Minute); 
                 Console.WriteLine(time.ToString("m:ss") + " serve " + type + " " + sandwich);
                 time = time.AddSeconds(Seconds);       
-            }
-           
+            }           
         }
 
        public void Reject()
@@ -164,9 +163,7 @@ namespace SnackShack
     }
   
 #endregion 
-
-
-
+    
 
 }
 
