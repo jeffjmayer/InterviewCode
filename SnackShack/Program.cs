@@ -10,10 +10,16 @@ namespace SnackShack
             var factory = new SnackShackFactory();
             var store = new SnackShackStore(factory);
            
-            store.OrderSandwich("standard", 1);
-            store.OrderSandwich("standard", 2);
-            store.OrderSandwich("standard", 3);
-            store.OrderSandwich("standard", 4);
+            var order = store.OrderSandwich("standard", 3, 45);
+            order.inventory = order.inventory-3;
+
+            order = store.OrderSandwich("standard", 4, order.inventory);
+            
+            for (int i = 0; i < 15; i++) 
+            {
+                store.OrderSandwich("standard", 3, order.inventory);
+                order.inventory = order.inventory - 3;            
+            }
             
             Console.ReadKey();
         }
@@ -28,30 +34,39 @@ namespace SnackShack
             _factory = factory;
         }
 
-        public void OrderSandwich(string type, int amount)
+        public Sandwich OrderSandwich(string type, int amount, int inventory)
         {
             var order = _factory.MakeSandwich(type);
             order.amount = amount;
+            order.inventory = inventory;
 
             if (order.Estimate())
             {
-                order.Make();
-                Console.WriteLine(order.time.ToString("m:ss") + " take a well earned break!" + "\n");
+                if (inventory > 0)
+                {
+                    order.Make();
+                    Console.WriteLine(order.time.ToString("m:ss") + " take a well earned break!" + "\n");                    
+                }
+                else
+                {
+                    order.Reject("Inventory");
+                }
             }
             else
             {
-                order.Reject();
-            }          
+                order.Reject("time");
+            }
+            return order;
         }
     }
     
     abstract public class Sandwich
     {
-        const int Seconds = 30;
-        const int Minute = 1;
-        const int Zero = 0;
-        const int RejectLimit = 5;
-        const int One = 1;
+        private const int Seconds = 30;
+        private const int Minute = 1;
+        private const int Zero = 0;
+        private const int RejectLimit = 5;
+        private const int One = 1;
         
         protected Sandwich(string type)
         {
@@ -62,6 +77,7 @@ namespace SnackShack
         public string type { get; set; }
         public DateTime time { get; set; }
         public int amount { get; set; }
+        public int inventory { get; set; }
 
         public bool Estimate()
         {
@@ -89,9 +105,9 @@ namespace SnackShack
            
         }
 
-       public void Reject()
+       public void Reject(string type)
         {
-            Console.WriteLine("Order rejected due to time contraints!");
+            Console.WriteLine("Order rejected due to " + type + " Contraints!" + "\n");
         }
     }
 
