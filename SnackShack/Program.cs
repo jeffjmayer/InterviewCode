@@ -7,19 +7,15 @@ namespace SnackShack
     {
         static void Main()
         {
-            Order(1, "standard");
-            Order(2, "standard");
-            Order(3, "standard");
-            Order(4, "standard");
-            
-            Console.ReadKey();
-        }
-
-        private static void Order(int sandwiches, string standard)
-        {
             var factory = new SnackShackFactory();
             var store = new SnackShackStore(factory);
-            store.OrderSandwich(standard, sandwiches);
+           
+            store.OrderSandwich("standard", 1);
+            store.OrderSandwich("standard", 2);
+            store.OrderSandwich("standard", 3);
+            store.OrderSandwich("standard", 4);
+            
+            Console.ReadKey();
         }
     }
    
