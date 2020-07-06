@@ -1,36 +1,25 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
 
 namespace SnackShack
 {
-    class SnackShack
+    public class SnackShack
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            var factory = new SnackShackFactory();
-            var store = new SnackShackStore(factory);
-            var time = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
-
-            Sandwich order = new StandardSandwich();
+            Order(1, "standard");
+            Order(2, "standard");
+            Order(3, "standard");
+            Order(4, "standard");
             
-            var sandwiches = 3;
-            Order(sandwiches, order, store, time);
-
-            sandwiches = 2;
-            Order(sandwiches, order, store, time);
-          
             Console.ReadKey();
         }
 
-        private static void Order(int sandwiches, Sandwich order, SnackShackStore store, DateTime time)
+        private static void Order(int sandwiches, string standard)
         {
-            for (var sandwich = 1; sandwich <= sandwiches; sandwich++)
-            {
-                order = store.OrderSandwich("standard", time, sandwich, sandwiches);
-                time = order.time;
-            }
-            Console.WriteLine(order.time.ToString("m:ss") + " take a well earned break!" + "\n");
+            var factory = new SnackShackFactory();
+            var store = new SnackShackStore(factory);
+            store.OrderSandwich(standard, sandwiches);
         }
     }
    
@@ -43,64 +32,71 @@ namespace SnackShack
             _factory = factory;
         }
 
-        public Sandwich OrderSandwich(string type, DateTime time, int sandwich, int amount)
+        public void OrderSandwich(string type, int amount)
         {
             var order = _factory.MakeSandwich(type);
-            order.time = time;
-            order.sandwiches = sandwich;
             order.amount = amount;
 
-            order.Make();
-            order.Serve();                
-            
-            return order;
+            if (order.Estimate())
+            {
+                order.Make();
+                Console.WriteLine(order.time.ToString("m:ss") + " take a well earned break!" + "\n");
+            }
+            else
+            {
+                order.Reject();
+            }          
         }
     }
     
     abstract public class Sandwich
     {
+        const int Seconds = 30;
+        const int Minute = 1;
+        const int Zero = 0;
+        const int RejectLimit = 5;
+        const int One = 1;
+        
         protected Sandwich(string type)
         {
             this.type = type;
-            
-            time = time;
-            sandwiches = sandwiches;
+            time = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, Zero, Zero, Zero);             
         }
 
         public string type { get; set; }
         public DateTime time { get; set; }
-        public int sandwiches { get; set; }
         public int amount { get; set; }
 
         public bool Estimate()
         {
-            return time.AddMinutes(amount).Minute + time.AddSeconds(30 * amount).Minute <= 5;
+            
+            return time.AddMinutes(amount).Minute + time.AddSeconds(Seconds * amount).Minute <= RejectLimit;
         }
 
         public void Make()
         {
-            if (time.ToString("m:ss") == "0:00")
+            for (var sandwich = One; sandwich <= amount; sandwich++)
             {
-                Console.WriteLine(time.ToString("m:ss") + " " + amount + " sandwich orders placed, start making " + type + " " + sandwiches);
+                if (time.ToString("m:ss") == "0:00")
+                {
+                    Console.WriteLine(time.ToString("m:ss") + " " + amount + " sandwich orders placed, start making " + type + " " + sandwich);
+                }
+                else
+                {
+                    Console.WriteLine(time.ToString("m:ss") + " make " + type + " " + sandwich);
+                }
+
+                time = time.AddMinutes(Minute); 
+                Console.WriteLine(time.ToString("m:ss") + " serve " + type + " " + sandwich);
+                time = time.AddSeconds(Seconds);       
             }
-            else
-            {
-                Console.WriteLine(time.ToString("m:ss") + " make " + type + " " + sandwiches);
-            }
-            time = time.AddMinutes(1);           
+           
         }
 
-        public void Serve()
-        {
-            Console.WriteLine(time.ToString("m:ss") + " serve " + type + " " + sandwiches);
-            time = time.AddSeconds(30);
-        }
-
-        public void Reject()
+       public void Reject()
         {
             Console.WriteLine("Order rejected due to time contraints!");
         }
-
     }
 
     public class SnackShackFactory
