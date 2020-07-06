@@ -6,25 +6,63 @@ namespace SnackShack
     public class SnackShack
     {
         static void Main()
+        {           
+            var input = new Input();
+            input.CustomerInput();
+        }
+    }
+
+    public abstract class InputWithHook
+    {
+        public void CustomerInput()
+        {
+            CustomerWants();
+        }
+
+        public void Serve(int answer)
         {
             var factory = new SnackShackFactory();
             var store = new SnackShackStore(factory);
-           
-            var order = store.OrderSandwich("standard", 3, 45);
-            order.inventory = order.inventory-3;
 
-            order = store.OrderSandwich("standard", 4, order.inventory);
-            
-            for (int i = 0; i < 15; i++) 
-            {
-                store.OrderSandwich("standard", 3, order.inventory);
-                order.inventory = order.inventory - 3;            
-            }
-            
-            Console.ReadKey();
+            store.OrderSandwich("standard", answer);           
+        }
+
+        public virtual int CustomerWants()
+        {
+            return 0;
         }
     }
-   
+
+    public class Input : InputWithHook
+    {
+        public override int CustomerWants()
+        {
+            return GetUserInput();
+        }
+
+        public int GetUserInput()
+        {
+            Console.WriteLine("How many sandwiches would you like? ");
+
+            try
+            {
+                int answer = Convert.ToInt32(Console.ReadLine());
+
+                Serve(answer);
+                CustomerInput();
+            }
+            catch
+            {
+                Console.WriteLine("IO error trying to read your answer needs to be a small integer" + "\n");
+                CustomerInput();
+            }
+
+            return 0;
+        }
+    }
+
+ # region SnackShackStore
+
     public class SnackShackStore
     {
         private readonly SnackShackFactory _factory;
@@ -34,23 +72,15 @@ namespace SnackShack
             _factory = factory;
         }
 
-        public Sandwich OrderSandwich(string type, int amount, int inventory)
+        public Sandwich OrderSandwich(string type, int amount)
         {
             var order = _factory.MakeSandwich(type);
             order.amount = amount;
-            order.inventory = inventory;
-
+            
             if (order.Estimate())
             {
-                if (inventory > 0)
-                {
-                    order.Make();
-                    Console.WriteLine(order.time.ToString("m:ss") + " take a well earned break!" + "\n");                    
-                }
-                else
-                {
-                    order.Reject("Inventory");
-                }
+              order.Make();
+              Console.WriteLine(order.time.ToString("m:ss") + " take a well earned break!" + "\n");                                    
             }
             else
             {
@@ -76,8 +106,7 @@ namespace SnackShack
 
         public string type { get; set; }
         public DateTime time { get; set; }
-        public int amount { get; set; }
-        public int inventory { get; set; }
+        public int amount { get; set; }        
 
         public bool Estimate()
         {
@@ -105,9 +134,9 @@ namespace SnackShack
            
         }
 
-       public void Reject(string type)
+       public void Reject(string rejectType)
         {
-            Console.WriteLine("Order rejected due to " + type + " Contraints!" + "\n");
+            Console.WriteLine("Order rejected due to " + rejectType + " Contraints!" + "\n");
         }
     }
 
@@ -130,6 +159,9 @@ namespace SnackShack
             base("sandwich")
         {
         }
-    }   
+    }  
+#endregion 
+
+
 }
 
