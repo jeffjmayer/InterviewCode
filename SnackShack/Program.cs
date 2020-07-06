@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace SnackShack
@@ -10,9 +9,19 @@ namespace SnackShack
         {
             var factory = new SnackShackFactory();
             var store = new SnackShackStore(factory);
+            var time = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
+            
+            Sandwich order = new StandardSandwich();
 
-            var sandwich = store.OrderSandwich("standard");
-            Console.WriteLine("Take a break from making " + sandwich.name + "\n");
+            const int amount = 4;
+            
+            for (int sandwich = 1; sandwich <= amount; sandwich++)
+            {
+                order = store.OrderSandwich("standard", time, sandwich, amount);
+                time = order.time;                
+            }
+
+            Console.WriteLine(order.time.ToString("m:ss") + " take a well earned break!" + "\n");
             
             Console.ReadKey();
         }
@@ -27,17 +36,55 @@ namespace SnackShack
             _factory = factory;
         }
 
-        public Sandwich OrderSandwich(string type)
+        public Sandwich OrderSandwich(string type, DateTime time, int sandwich, int amount)
         {
-            Sandwich sandwich = _factory.MakeSandwich(type);
-
-            sandwich.Making();
-            sandwich.Serve();
+            var order = _factory.MakeSandwich(type);
+            order.time = time;
+            order.sandwiches = sandwich;
+            order.amount = amount;
+            order.Make();
+            order.Serve();
            
-            return sandwich;
+            return order;
         }
     }
     
+    abstract public class Sandwich
+    {
+        protected Sandwich(string type)
+        {
+            this.type = type;
+            
+            time = time;
+            sandwiches = sandwiches;
+        }
+
+        public string type { get; set; }
+        public DateTime time { get; set; }
+        public int sandwiches { get; set; }
+        public int amount { get; set; }
+
+        public void Make()
+        {            
+            if (time.ToString("m:ss") == "0:00")
+            {
+                Console.WriteLine(time.ToString("m:ss") + " " + amount + " sandwich orders placed, start making " + type + " " + sandwiches);
+            }
+            else
+            {
+                Console.WriteLine(time.ToString("m:ss") + " make " + type + " " + sandwiches);
+            }
+
+            time = time.AddMinutes(1);
+        }
+
+        public void Serve()
+        {
+            Console.WriteLine(time.ToString("m:ss") + " serve " + type + " " + sandwiches);
+            time = time.AddSeconds(30);
+        }
+    }
+
     public class SnackShackFactory
     {
         public Sandwich MakeSandwich(string type)
@@ -47,60 +94,16 @@ namespace SnackShack
             {
                 case "standard": sandwich = new StandardSandwich(); break;
             }
-            Console.WriteLine(sandwich);
             return sandwich;
-        }
-    }
-
-    abstract public class Sandwich
-    {
-        private string _name;
-        protected Sandwich(string name)
-        {
-            _name = name;           
-        }
-
-        public string name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
-
-        public void Making()
-        {
-            Console.WriteLine("Making " + _name);
-        }
-
-        public void Serve()
-        {
-            Console.WriteLine("Serve " + _name);
-        }
-
-        public override string ToString()
-        {
-            var display = new StringBuilder();
-            display.Append("---- " + _name + " ----\n");
-        
-            return display.ToString();
         }
     }
 
     public class StandardSandwich : Sandwich
     {
         public StandardSandwich() :
-            base("Standard Sandwich")
+            base("sandwich")
         {
         }
-    }
-    
-    // added an example of extending the kind of sandwiches
-    public class DeluxeSandwich : Sandwich
-    {
-        public DeluxeSandwich() :
-            base("Deluxe Sandwich")
-        {
-        }
-    }
-   
+    }   
 }
 
