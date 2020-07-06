@@ -8,60 +8,62 @@ namespace SnackShack
         static void Main()
         {           
             var input = new Input();
-            input.CustomerInput();
+            input.CustomerInput("How many sandwiches would you like? ", "standard");
         }
     }
 
+ # region Input
     public abstract class InputWithHook
     {
-        public void CustomerInput()
+        public void CustomerInput(string question, string type)
         {
-            CustomerWants();
+            CustomerWants(question, type);
         }
 
-        public void Serve(int answer)
+        public void ProcessAnswer(int answer, string type)
         {
             var factory = new SnackShackFactory();
             var store = new SnackShackStore(factory);
 
-            store.OrderSandwich("standard", answer);           
+            store.OrderSandwich(type, answer);           
         }
 
-        public virtual int CustomerWants()
+        public virtual int CustomerWants(string quesiton, string type)
         {
             return 0;
         }
     }
 
     public class Input : InputWithHook
-    {
-        public override int CustomerWants()
+    {        
+        public override int CustomerWants(string quesiton, string type)
         {
-            return GetUserInput();
+            return GetUserInput(quesiton, type);
         }
 
-        public int GetUserInput()
+        public int GetUserInput(string question, string type)
         {
-            Console.WriteLine("How many sandwiches would you like? ");
+            Console.WriteLine(question);
 
             try
             {
                 int answer = Convert.ToInt32(Console.ReadLine());
 
-                Serve(answer);
-                CustomerInput();
+                ProcessAnswer(answer, type);
+                CustomerInput(question, type);
             }
             catch
-            {
+            {                
                 Console.WriteLine("IO error trying to read your answer needs to be a small integer" + "\n");
-                CustomerInput();
+                CustomerInput(question, type);
             }
 
             return 0;
         }
     }
+ #endregion
 
- # region SnackShackStore
+ # region Factory
 
     public class SnackShackStore
     {
@@ -84,7 +86,7 @@ namespace SnackShack
             }
             else
             {
-                order.Reject("time");
+                order.Reject();
             }
             return order;
         }
@@ -134,9 +136,9 @@ namespace SnackShack
            
         }
 
-       public void Reject(string rejectType)
+       public void Reject()
         {
-            Console.WriteLine("Order rejected due to " + rejectType + " Contraints!" + "\n");
+            Console.WriteLine("Order rejected!" + "\n");
         }
     }
 
@@ -159,8 +161,11 @@ namespace SnackShack
             base("sandwich")
         {
         }
-    }  
+    }
+  
 #endregion 
+
+
 
 
 }
