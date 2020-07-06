@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Text;
+
 
 namespace SnackShack
 {
@@ -22,6 +22,12 @@ namespace SnackShack
             }
 
             Console.WriteLine(order.time.ToString("m:ss") + " take a well earned break!" + "\n");
+
+            if (time.Minute > 5)
+            {
+                Console.Clear();
+                Console.WriteLine("Order rejected due to time contraints!");
+            }
             
             Console.ReadKey();
         }
