@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 
 namespace SnackShack
@@ -10,26 +11,26 @@ namespace SnackShack
             var factory = new SnackShackFactory();
             var store = new SnackShackStore(factory);
             var time = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
-            
+
             Sandwich order = new StandardSandwich();
-
-            const int amount = 4;
             
-            for (int sandwich = 1; sandwich <= amount; sandwich++)
-            {
-                order = store.OrderSandwich("standard", time, sandwich, amount);
-                time = order.time;                
-            }
+            var sandwiches = 3;
+            Order(sandwiches, order, store, time);
 
-            Console.WriteLine(order.time.ToString("m:ss") + " take a well earned break!" + "\n");
-
-            if (time.Minute > 5)
-            {
-                Console.Clear();
-                Console.WriteLine("Order rejected due to time contraints!");
-            }
-            
+            sandwiches = 2;
+            Order(sandwiches, order, store, time);
+          
             Console.ReadKey();
+        }
+
+        private static void Order(int sandwiches, Sandwich order, SnackShackStore store, DateTime time)
+        {
+            for (var sandwich = 1; sandwich <= sandwiches; sandwich++)
+            {
+                order = store.OrderSandwich("standard", time, sandwich, sandwiches);
+                time = order.time;
+            }
+            Console.WriteLine(order.time.ToString("m:ss") + " take a well earned break!" + "\n");
         }
     }
    
@@ -48,9 +49,10 @@ namespace SnackShack
             order.time = time;
             order.sandwiches = sandwich;
             order.amount = amount;
+
             order.Make();
-            order.Serve();
-           
+            order.Serve();                
+            
             return order;
         }
     }
@@ -70,8 +72,13 @@ namespace SnackShack
         public int sandwiches { get; set; }
         public int amount { get; set; }
 
+        public bool Estimate()
+        {
+            return time.AddMinutes(amount).Minute + time.AddSeconds(30 * amount).Minute <= 5;
+        }
+
         public void Make()
-        {            
+        {
             if (time.ToString("m:ss") == "0:00")
             {
                 Console.WriteLine(time.ToString("m:ss") + " " + amount + " sandwich orders placed, start making " + type + " " + sandwiches);
@@ -80,8 +87,7 @@ namespace SnackShack
             {
                 Console.WriteLine(time.ToString("m:ss") + " make " + type + " " + sandwiches);
             }
-
-            time = time.AddMinutes(1);
+            time = time.AddMinutes(1);           
         }
 
         public void Serve()
@@ -89,6 +95,12 @@ namespace SnackShack
             Console.WriteLine(time.ToString("m:ss") + " serve " + type + " " + sandwiches);
             time = time.AddSeconds(30);
         }
+
+        public void Reject()
+        {
+            Console.WriteLine("Order rejected due to time contraints!");
+        }
+
     }
 
     public class SnackShackFactory
