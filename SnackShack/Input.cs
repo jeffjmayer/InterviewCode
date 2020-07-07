@@ -4,12 +4,12 @@ namespace SnackShack
 {
     public class Input : InputImplementation
     {        
-        public override int CustomerWants(string quesiton, string type, InventoryManager inventory)
+        public override int CustomerWants(string quesiton, string type)
         {
-            return GetUserInput(quesiton, type, inventory);
+            return GetUserInput(quesiton, type);
         }
 
-        public int GetUserInput(string question, string type, InventoryManager inventory)
+        public int GetUserInput(string question, string type)
         {
             Console.WriteLine(question);
 
@@ -17,14 +17,14 @@ namespace SnackShack
             {
                 int answer = Convert.ToInt32(Console.ReadLine());
 
-                ProcessAnswer(answer, type, inventory);                
+                ProcessAnswer(answer, type);                
             }
             catch
             {                
                 Console.WriteLine("IO error trying to read your answer needs to be a small integer" + "\n");                
             }
 
-            CustomerInput(question, type, inventory);
+            CustomerInput(question, type);
 
             return 0;
         }
