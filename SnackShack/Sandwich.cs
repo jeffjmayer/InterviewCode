@@ -32,7 +32,7 @@ namespace SnackShack
             {
                 if (time.ToString("m:ss") == "0:00")
                 {
-                    Console.WriteLine(time.ToString("m:ss") + " " + amount + " sandwich orders placed, start making " + type + " " + sandwich);
+                    Console.WriteLine("\n" + time.ToString("m:ss") + " " + amount + " sandwich orders placed, start making " + type + " " + sandwich);
                 }
                 else
                 {
@@ -47,7 +47,7 @@ namespace SnackShack
 
         public void Reject()
         {
-            Console.WriteLine("Order rejected!" + "\n");
+            Console.WriteLine("\n" + "Order rejected!" + "\n");
         }
     }
     
