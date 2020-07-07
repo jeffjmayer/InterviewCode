@@ -2,7 +2,7 @@
 
 namespace SnackShack
 {
-    abstract public class Sandwich
+    abstract public class MakeOrder
     {
         private const int ThirtySeconds = 30;
         private const int SevenSeconds = 7;
@@ -12,7 +12,7 @@ namespace SnackShack
         
         private int _rejectLimit = 5;
         
-        protected Sandwich(string type)
+        protected MakeOrder(string type)
         {
             this.type = type;
 
@@ -41,37 +41,48 @@ namespace SnackShack
 
         public void Make()
         {
+            int lineNumber = 1;
+
             if (addJacketPotatoes && sandwichTime.ToString("m:ss") == "0:00")
             {
                 sandwichTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, Zero, Zero, One);
-                Console.WriteLine("\n" + jacketTime.ToString("m:ss") + " Put jacket potato in microwave");
+                Console.WriteLine("\n" + lineNumber + ". " + jacketTime.ToString("m:ss") + " Put jacket potato in microwave");
             }
             
             for (var sandwich = One; sandwich <= amount; sandwich++)
             {
                 if (!addJacketPotatoes && sandwichTime.ToString("m:ss") == "0:00")
                 {
-                    Console.WriteLine("\n" + sandwichTime.ToString("m:ss") + " " + amount + " sandwich orders placed, start making " + type + " " + sandwich);
+                    Console.WriteLine("\n" + lineNumber + ". " + sandwichTime.ToString("m:ss") + " " + amount + " sandwich orders placed, start making " + type + " " + sandwich);
                 }
                 else
                 {
-                    Console.WriteLine(sandwichTime.ToString("m:ss") + " make " + type + " " + sandwich);
+                    lineNumber++;
+                    Console.WriteLine(lineNumber + ". " + sandwichTime.ToString("m:ss") + " make " + type + " " + sandwich);
                 }
 
+                lineNumber++;
                 sandwichTime = sandwichTime.AddMinutes(Minute); 
-                Console.WriteLine(sandwichTime.ToString("m:ss") + " serve " + type + " " + sandwich);
+                Console.WriteLine(lineNumber + ". " + sandwichTime.ToString("m:ss") + " serve " + type + " " + sandwich);
                 sandwichTime = sandwichTime.AddSeconds(ThirtySeconds);       
             }
 
             if (addJacketPotatoes)
             {
-                Console.WriteLine(sandwichTime.ToString("m:ss") + " take jacket potato out of microwave");
+                lineNumber++;
+                Console.WriteLine(lineNumber + ". " + sandwichTime.ToString("m:ss") + " take jacket potato out of microwave");
                 sandwichTime = sandwichTime.AddSeconds(ThirtySeconds);
-                Console.WriteLine(sandwichTime.ToString("m:ss") + " top jacket potato");
+                lineNumber++;
+                Console.WriteLine(lineNumber + ". " + sandwichTime.ToString("m:ss") + " top jacket potato");
                 sandwichTime = sandwichTime.AddSeconds(ThirtySeconds);
-                Console.WriteLine(sandwichTime.ToString("m:ss") + " serve jacket potato");
+                lineNumber++;
+                Console.WriteLine(lineNumber + ". " + sandwichTime.ToString("m:ss") + " serve jacket potato");
                 sandwichTime = sandwichTime.AddSeconds(ThirtySeconds);
-            }            
+            }
+
+            string message = addJacketPotatoes ? "take a break!" : "take a well earned break!";
+            lineNumber++;
+            Console.WriteLine(lineNumber + ". " + sandwichTime.ToString("m:ss") + " " + message + "\n"); 
         }
 
         public void Reject()
@@ -80,9 +91,9 @@ namespace SnackShack
         }
     }
     
-    public class StandardSandwich : Sandwich
+    public class Standard : MakeOrder
     {
-        public StandardSandwich() :
+        public Standard() :
             base("sandwich")
         {
         }

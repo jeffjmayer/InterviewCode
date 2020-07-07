@@ -11,7 +11,7 @@ namespace SnackShack
             _factory = factory;
         }
 
-        public Sandwich OrderSandwich(string type, int amount, InventoryManager inventory, bool jacketPotatoes)
+        public MakeOrder OrderSandwich(string type, int amount, InventoryManager inventory, bool jacketPotatoes)
         {
             const int none = 0;
 
@@ -30,8 +30,7 @@ namespace SnackShack
                 else
                 {
                     order.Make();
-                    string message = jacketPotatoes ? "take a break!" : "take a well earned break!";
-                    Console.WriteLine(order.sandwichTime.ToString("m:ss") + " " + message + "\n");                    
+                   
                 }                 
             }
             else

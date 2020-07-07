@@ -2,14 +2,14 @@ namespace SnackShack
 {
     public class Factory
     {
-        public Sandwich MakeSandwich(string type)
+        public MakeOrder MakeSandwich(string type)
         {
-            Sandwich sandwich = null;
+            MakeOrder makeOrder = null;
             switch (type)
             {
-                case "standard": sandwich = new StandardSandwich(); break;
+                case "standard": makeOrder = new Standard(); break;
             }
-            return sandwich;
+            return makeOrder;
         }
     }
 }
