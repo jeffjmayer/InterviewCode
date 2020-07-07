@@ -4,9 +4,8 @@
     {
         static void Main()
         {
-            
             var input = new Input();
-            input.CustomerInput("How many sandwiches would you like? ", "standard");
+            input.CustomerInput("How many sandwiches would you like? ", "standard", "Include jacket potatoes (y/n)?");
         }
     }
 }

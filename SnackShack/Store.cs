@@ -11,7 +11,7 @@ namespace SnackShack
             _factory = factory;
         }
 
-        public Sandwich OrderSandwich(string type, int amount, InventoryManager inventory)
+        public Sandwich OrderSandwich(string type, int amount, InventoryManager inventory, bool jacketPotatoes)
         {
             const int none = 0;
 
