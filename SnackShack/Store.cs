@@ -17,6 +17,7 @@ namespace SnackShack
 
             var order = _factory.MakeSandwich(type);
             order.amount = amount;
+            order.addJacketPotatoes = jacketPotatoes;
             
             if (order.Estimate())
             {                
@@ -29,7 +30,8 @@ namespace SnackShack
                 else
                 {
                     order.Make();
-                    Console.WriteLine(order.time.ToString("m:ss") + " take a well earned break!" + "\n");                    
+                    string message = jacketPotatoes ? "take a break!" : "take a well earned break!";
+                    Console.WriteLine(order.sandwichTime.ToString("m:ss") + " " + message + "\n");                    
                 }                 
             }
             else
